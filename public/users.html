@@ -1,0 +1,6 @@
+<h1>Users found</h1>
+<div ng-repeat='user in users'>
+  <strong>Name:</strong> {{user.name}}<br />
+  <strong>Age:</strong> {{user.age}}<br />
+  <a ng-href='/#/users/{{user.id}}'>View</a>
+</div>

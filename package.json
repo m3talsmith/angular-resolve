@@ -1,0 +1,17 @@
+{
+  "name": "angular-resolve",
+  "version": "0.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "koa": "^0.8.0",
+    "koa-logger": "^1.2.1",
+    "koa-router": "^3.1.4",
+    "koa-static": "^1.4.5"
+  }
+}

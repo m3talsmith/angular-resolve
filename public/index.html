@@ -1,0 +1,92 @@
+<!doctype html>
+<html ng-app='Users'>
+  <head>
+    <title>An Angular ngRouter Resolve Test</title>
+    <script src='//ajax.googleapis.com/ajax/libs/angularjs/1.2.15/angular.min.js'></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.15/angular-route.min.js"></script>
+  </head>
+  <body>
+    <h1>Useful Users</h1>
+    <div ng-controller='UserController'>
+      <a ng-href='/'>Home</a>
+      <a ng-href='/#/users'>List Users</a>
+      <hr />
+      <div ng-view></div>
+    </div>
+
+    <script>
+      (function () {
+        /**
+         * @class ControllerHelper
+         * @classDesc Provides various helpers for Controllers such as attaching event listeners
+         */
+        var ControllerHelper = {
+          addListeners: function (scope, route) {
+            scope.$on('$routeChangeSuccess', function () {
+              var currentAttribute;
+              for(attribute in route.current.locals) {
+                currentAttribute = route.current.locals[attribute];
+                if(!currentAttribute.data) continue;
+                scope[attribute] = route.current.locals[attribute].data;
+              }
+            });
+          }
+        };
+
+        /**
+         * @class UserController
+         * @classDesc User Controller for user related views
+         * @ngInject
+         */
+        function UserController ($scope, $route) {
+          ControllerHelper.addListeners($scope, $route);
+        }
+
+        UserController.$inject = ['$scope', '$route'];
+
+        /**
+         * @class UserRouter
+         * @classDesc User route mapping for the User Controller
+         * @ngInject
+         */
+        function UserRouter ($routeProvider) {
+          $routeProvider
+            .when('/users', {
+              templateUrl: 'users.html',
+              controller: 'UserController',
+              resolve: {
+                users: function ($http) {
+                  return $http.get('/users.json')
+                    .success(function (users) {
+                      return users;
+                    });
+                }
+              }
+            })
+            .when('/users/:id', {
+              templateUrl: 'user.html',
+              controller: 'UserController',
+              resolve: {
+                user: function ($http, $route) {
+                  return $http.get('/user-' + $route.current.params.id + '.json')
+                    .success(function (user) {
+                      return user;
+                    });
+                }
+              }
+            });
+        }
+          
+
+        angular.module('Users', ['ngRoute'])
+          .controller('UserController', UserController)
+          .config(UserRouter)
+          .config(function ($routeProvider) {
+            $routeProvider.otherwise({
+              redirectTo: '/'
+            });
+          });
+      })();
+    </script>
+  </body>
+</html>
