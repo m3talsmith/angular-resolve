@@ -55,11 +55,8 @@
               templateUrl: 'users.html',
               controller: 'UserController',
               resolve: {
-                users: function ($http) {
-                  return $http.get('/users.json')
-                    .success(function (users) {
-                      return users;
-                    });
+                users: function (User) {
+                  return User.index();
                 }
               }
             })
@@ -67,19 +64,37 @@
               templateUrl: 'user.html',
               controller: 'UserController',
               resolve: {
-                user: function ($http, $route) {
-                  return $http.get('/user-' + $route.current.params.id + '.json')
-                    .success(function (user) {
-                      return user;
-                    });
+                user: function ($route, User) {
+                  return User.get($route.current.params.id);
                 }
               }
             });
         }
+
+        function User ($http) {
+          var UserClass = {
+            index: function () {
+              return $http.get('/users.json')
+                .success(function (users) {
+                  return users;
+                });
+            },
+            get: function (id) {
+              return $http.get('/user-' + id + '.json')
+                .success(function (user) {
+                  return user;
+                });
+            }
+          };
           
+          return UserClass;
+        }
+
+        User.$inject = ['$http'];
 
         angular.module('Users', ['ngRoute'])
           .controller('UserController', UserController)
+          .factory('User', User)
           .config(UserRouter)
           .config(function ($routeProvider) {
             $routeProvider.otherwise({
